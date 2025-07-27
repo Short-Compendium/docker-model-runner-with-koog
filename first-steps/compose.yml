@@ -1,0 +1,18 @@
+services:
+
+  koog-app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    environment:
+      SYSTEM_PROMPT: You are a helpful cooking assistant.
+      AGENT_INPUT: Create a recipe to cook a yummy ratatouille.
+    models:
+      app_model:
+        endpoint_var: MODEL_RUNNER_BASE_URL
+        model_var: MODEL_RUNNER_CHAT_MODEL
+
+models:
+  app_model:
+    model: hf.co/menlo/lucy-128k-gguf:q8_0
+

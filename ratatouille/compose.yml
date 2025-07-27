@@ -1,0 +1,37 @@
+services:
+
+  koog-app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    environment:
+      SYSTEM_PROMPT: |
+        You are a helpful cooking assistant.
+        Your job is to understand the user prompt and decide if you need to use tools to run external commands.
+      AGENT_INPUT: |
+        Search for the ingredients to cook a ratatouille, max result 1
+        Then, from these found ingredients, generate a yummy ratatouille recipe
+        Do it only once
+      MCP_HOST: http://mcp-gateway:8811/sse
+    depends_on:
+      - mcp-gateway
+    models:
+      app_model:
+        # NOTE: populate the environment variables with the model runner endpoint and model name
+        endpoint_var: MODEL_RUNNER_BASE_URL
+        model_var: MODEL_RUNNER_CHAT_MODEL
+
+  mcp-gateway:
+    image: docker/mcp-gateway:latest
+    command:
+      - --port=8811
+      - --transport=sse
+      - --servers=duckduckgo
+      - --verbose
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+
+models:
+  app_model:
+    model: hf.co/menlo/lucy-128k-gguf:q4_k_m
+
